@@ -1,9 +1,9 @@
-import { getUsers } from "../../db/Users/functions"
+import { getUsers } from '../../db/Users/functions';
 
 export default {
-    Query: {
-        users: () => {
-            return getUsers();
-        }
-    }
-}
+  Query: {
+    users: () => {
+      return getUsers();
+    },
+  },
+};

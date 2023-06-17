@@ -1,5 +1,6 @@
 export default {
-    PORT: 5000,
-    DB_URL: 'mongodb://localhost/test',
-    CLIENT_URL: 'http://localhost:3000',
-  }
+  PORT: process.env.PORT,
+  DB_URL: process.env.DB_URL,
+  CLIENT_URL: process.env.CLIENT_URL,
+  TOKEN_SECRET_KEY: process.env.TOKEN_SECRET_KEY,
+};

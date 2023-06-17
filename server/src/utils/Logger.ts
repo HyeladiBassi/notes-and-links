@@ -18,7 +18,7 @@ const format = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
   winston.format.printf(({ timestamp, level, message }) => {
     return `${timestamp}] ${level}: ${message}`;
-  })
+  }),
 );
 
 const transports = [new winston.transports.Console()];

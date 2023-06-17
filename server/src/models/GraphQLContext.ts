@@ -1,3 +1,3 @@
 export default interface GraphQLContext {
-    token?: number
+  token?: number;
 }
