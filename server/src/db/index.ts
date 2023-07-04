@@ -2,6 +2,9 @@ import mongoose from 'mongoose';
 import Logger from '../utils/Logger';
 import config from '../config';
 
+// Define the MongoDB connection URI
+const MONGODB_URI = config.DB_URL || "";
+
 // Create a function to initialize MongoDB connection
 export const initializeMongoDB = async () => {
   try {
