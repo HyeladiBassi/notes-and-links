@@ -1,9 +1,9 @@
-import 'dotenv/config';
-import Logger from './utils/Logger';
-import startServer from './app';
-import { initializeMongoDB } from './db';
+import dotenv from "dotenv";
+dotenv.config();
+import "reflect-metadata";
+import Logger from "./utils/Logger";
+import startServer from "./app";
 
-initializeMongoDB();
 startServer();
 
 const exitHandler = () => {
@@ -15,9 +15,9 @@ const unexpectedErrorHandler = (error: unknown) => {
   exitHandler();
 };
 
-process.on('uncaughtException', unexpectedErrorHandler);
-process.on('unhandledRejection', unexpectedErrorHandler);
+process.on("uncaughtException", unexpectedErrorHandler);
+process.on("unhandledRejection", unexpectedErrorHandler);
 
-process.on('SIGTERM', () => {
-  Logger.info('SIGTERM received');
+process.on("SIGTERM", () => {
+  Logger.info("SIGTERM received");
 });
