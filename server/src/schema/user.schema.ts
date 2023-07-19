@@ -70,9 +70,19 @@ export class CreateUserInput {
 
 @InputType()
 export class LoginInput {
+  @IsEmail()
   @Field(() => String)
   email: string;
 
+  @MinLength(6, {
+    message: "Password must me at least 6 characters long",
+  })
   @Field(() => String)
   password: string;
+}
+
+@ObjectType()
+export class Token {
+  @Field(() => String)
+  token: string;
 }

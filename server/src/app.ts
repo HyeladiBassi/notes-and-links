@@ -18,6 +18,7 @@ import {
 import { resolvers } from "./resolvers";
 import { connectToMongo } from "./utils/mongo";
 import Context from "./types/context";
+import { customFormatError } from './utils/formatError';
 
 async function startServer() {
   const schema = await buildSchema({
@@ -65,6 +66,7 @@ async function startServer() {
   // Add Graphql Middleware
   const apolloServer = new ApolloServer<Context>({
     schema,
+    formatError: customFormatError,
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
       process.env.NODE_ENV === "production"

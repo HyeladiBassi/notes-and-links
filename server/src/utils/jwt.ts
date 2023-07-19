@@ -2,9 +2,11 @@ import jwt from "jsonwebtoken";
 import config from "../config";
 
 const { publicKey: encodedPublic, privateKey: encodedPrivate } = config;
+
 const publicKey = Buffer.from(encodedPublic as string, "base64").toString(
   "ascii"
-);
+  );
+
 const privateKey = Buffer.from(encodedPrivate as string, "base64").toString(
   "ascii"
 );
