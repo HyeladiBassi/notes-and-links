@@ -1,8 +1,7 @@
-import { useContext } from 'react';
 import { TextField, Stack, Typography, Link, Button } from '@mui/material';
 import { useFormik, FormikValues } from 'formik';
 import * as Yup from 'yup';
-import { AuthContext } from 'components/Auth';
+import { useNavigate } from 'react-router-dom';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Email is required'),
@@ -15,7 +14,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const Register = () => {
-  const { setIsLogin } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const initialValues = {
     email: '',
@@ -36,7 +35,7 @@ const Register = () => {
   return (
     <Stack spacing={2}>
       <Typography sx={{ mb: 4 }}>Welcome, Create account</Typography>
-      <Stack sx={{ mt: 4, mb: 2 }} spacing={2}>
+      <Stack component="form" sx={{ mt: 4, mb: 2 }} spacing={2}>
         <TextField
           type="email"
           name="email"
@@ -68,7 +67,7 @@ const Register = () => {
       </Button>
       <Typography>
         Already have an account?&nbsp;
-        <Button type="button" variant="text" onClick={() => setIsLogin(true)}>
+        <Button type="button" variant="text" onClick={() => navigate('/login')}>
           Login
         </Button>
       </Typography>

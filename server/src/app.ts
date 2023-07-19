@@ -19,6 +19,7 @@ import { resolvers } from "./resolvers";
 import { connectToMongo } from "./utils/mongo";
 import Context from "./types/context";
 import { customFormatError } from './utils/formatError';
+import config from './config';
 
 async function startServer() {
   const schema = await buildSchema({
@@ -88,9 +89,9 @@ async function startServer() {
 
   // Start the server
   await new Promise<void>((resolve) =>
-    httpServer.listen({ port: 4000 }, resolve)
+    httpServer.listen({ port: config.port }, resolve)
   );
-  Logger.info(`Server ready at http://localhost:${4000}`);
+  Logger.info(`Server ready at http://localhost:${config.port}`);
   connectToMongo();
 }
 
