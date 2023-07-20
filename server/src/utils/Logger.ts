@@ -1,4 +1,4 @@
-import winston from 'winston';
+import winston from "winston";
 
 const levels = {
   error: 0,
@@ -9,13 +9,13 @@ const levels = {
 };
 
 const level = () => {
-  const env = process.env.NODE_ENV || 'staging';
-  const isStaging = env === 'staging';
-  return isStaging ? 'debug' : 'info';
+  const env = process.env.NODE_ENV || "staging";
+  const isStaging = env === "staging";
+  return isStaging ? "debug" : "info";
 };
 
 const format = winston.format.combine(
-  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
+  winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss:ms" }),
   winston.format.printf(({ timestamp, level, message }) => {
     return `${timestamp}] ${level}: ${message}`;
   })
