@@ -1,10 +1,14 @@
+import { useEffect } from 'react';
 import { TextField, Stack, Typography, Link, Button } from '@mui/material';
 import { useFormik, FormikValues } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
+import { useMutationResponse } from '../../gql/useApiResponse';
+import { USER_REGISTER } from 'gql/auth';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Email is required'),
+  name: Yup.string().required('A name is required for this user'),
   password: Yup.string()
     .min(6, 'Password must be at least 6 characters')
     .required('Password is required'),
@@ -14,16 +18,29 @@ const validationSchema = Yup.object().shape({
 });
 
 const Register = () => {
+  const { call: createUser, state } = useMutationResponse<{ success: boolean }>(
+    'createUser',
+    USER_REGISTER
+  );
   const navigate = useNavigate();
 
   const initialValues = {
     email: '',
+    name: '',
     password: '',
     confirmPassword: '',
   };
 
   const handleSubmit = (values: FormikValues) => {
-    return;
+    return createUser({
+      variables: {
+        input: {
+          email: values.email,
+          name: values.name,
+          password: values.password,
+        },
+      },
+    });
   };
 
   const formik = useFormik({
@@ -32,10 +49,22 @@ const Register = () => {
     validationSchema: validationSchema,
   });
 
+  useEffect(() => {
+    if (state.data && state.data.success && !state.loading && !state.error) {
+      navigate('/login');
+    }
+  }, [state]);
+
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2} p={0}>
       <Typography sx={{ mb: 4 }}>Welcome, Create account</Typography>
       <Stack component="form" sx={{ mt: 4, mb: 2 }} spacing={2}>
+        <TextField
+          type="text"
+          name="name"
+          value={formik.values.name}
+          onChange={formik.handleChange}
+        />
         <TextField
           type="email"
           name="email"

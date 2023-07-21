@@ -82,7 +82,7 @@ export class LoginInput {
 }
 
 @ObjectType()
-export class Token {
+export class LoginResponse extends User {
   @Field(() => String)
   token: string;
 }

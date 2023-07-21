@@ -1,9 +1,10 @@
 import { TextField, Typography, Button, Stack } from '@mui/material';
 import { useFormik, FormikValues } from 'formik';
-import { useMutation } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { USER_LOGIN } from 'gql/auth';
+import { useMutationResponse } from '../../gql/useApiResponse';
+import { useEffect } from 'react';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Email is required'),
@@ -12,8 +13,18 @@ const validationSchema = Yup.object().shape({
     .required('Password is required'),
 });
 
+interface LoginResponse {
+  token: string;
+  name: string;
+  email: string;
+  readonly _id: string;
+}
+
 const Login = () => {
-  const [login, loginState] = useMutation(USER_LOGIN);
+  const { call: login, state } = useMutationResponse<LoginResponse>(
+    'login',
+    USER_LOGIN
+  );
   const navigate = useNavigate();
 
   const initialValues = {
@@ -22,7 +33,6 @@ const Login = () => {
   };
 
   const handleSubmit = (values: FormikValues) => {
-    console.log('----values', values);
     return login({
       variables: {
         input: {
@@ -39,8 +49,22 @@ const Login = () => {
     validationSchema: validationSchema,
   });
 
+  const saveUser = (data: LoginResponse) => {
+    localStorage.setItem('accessToken', data.token);
+    localStorage.setItem('_id', data._id);
+    localStorage.setItem('email', data.email);
+    localStorage.setItem('name', data.name);
+    navigate('/');
+  };
+
+  useEffect(() => {
+    if (state.data && state.data.token && !state.loading) {
+      saveUser(state.data);
+    }
+  }, [state]);
+
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2} p={0}>
       <Typography component="h1" sx={{ mb: 4 }}>
         Welcome, login
       </Typography>

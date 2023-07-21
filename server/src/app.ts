@@ -75,7 +75,9 @@ async function startServer() {
         : ApolloServerPluginLandingPageLocalDefault(),
     ],
   });
+
   await apolloServer.start();
+
   app.use(
     "/graphql",
     cors<cors.CorsRequest>(),
