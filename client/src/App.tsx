@@ -18,7 +18,8 @@ import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 import Register from 'components/Auth/Register';
 import Login from 'components/Auth/Login';
-import { appLoader } from 'loader/appLoader';
+import { appLoader } from 'loaders/appLoader';
+import { authLoader } from 'loaders/authLoader';
 import Main from 'components/Main';
 
 const theme = createTheme({
@@ -42,10 +43,12 @@ const router = createBrowserRouter([
   {
     path: '/login',
     element: <Login />,
+    loader: authLoader,
   },
   {
     path: '/register',
     element: <Register />,
+    loader: authLoader,
   },
 ]);
 
@@ -72,7 +75,9 @@ const authLink = setContext((_, { headers }) => {
 const link = from([
   errorLink,
   authLink,
-  new HttpLink({ uri: `http://localhost:${process.env.REACT_APP_SERVER_PORT}/graphql` }),
+  new HttpLink({
+    uri: `http://localhost:${process.env.REACT_APP_SERVER_PORT}/graphql`,
+  }),
 ]);
 
 const client = new ApolloClient({
@@ -89,7 +94,7 @@ const App = () => {
     <ApolloProvider client={client}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Container maxWidth="sm" sx={{ minHeight: '100vh' }}>
+        <Container maxWidth="sm" sx={{ minHeight: '100vh', p: 0 }}>
           <RouterProvider router={router} />
         </Container>
       </ThemeProvider>

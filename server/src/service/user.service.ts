@@ -41,7 +41,7 @@ class UserService {
     //   secure: process.env.NODE_ENV === "production",
     // });
 
-    return { token };
+    return { token, ...user };
   }
 }
 
