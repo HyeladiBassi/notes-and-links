@@ -1,27 +1,22 @@
 import { gql } from '@apollo/client';
 
 export const USER_LOGIN = gql`
-  mutation userOTP($input: UserLoginRequest) {
-    userLogin(input: $input) {
-      data {
-        token
-        user
-      }
-      error
-      status
+  mutation login($input: LoginInput!) {
+    login(input: $input) {
+      token
+      _id
+      email
+      name
     }
   }
 `;
 
 export const USER_REGISTER = gql`
-  mutation userOTP($input: UserRegisterRequest) {
-    userRegister(input: $input) {
-      data {
-        token
-      }
-      error
-      status
+  mutation createUser($input: CreateUserInput!) {
+    createUser(input: $input) {
+      _id
+      name
+      email
     }
   }
 `;
-

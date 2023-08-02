@@ -1,22 +1,40 @@
 import express from "express";
-import helmet from 'helmet'
-import compression from 'compression';
-import cors from 'cors'
-import { ApolloServer } from '@apollo/server'
+import helmet from "helmet";
+import compression from "compression";
+import cors from "cors";
+import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
-import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
-import config from "./config";
+import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import Logger from "./utils/Logger";
-import { resolvers, typeDefs } from "./gql";
-import GraphQLContext from "./models/GraphQLContext";
-import http from 'http'
-import bodyParser from 'body-parser'
+import http from "http";
+import bodyParser from "body-parser";
 import { cspDirectives } from "./config/csp";
+import { buildSchema } from "type-graphql";
+import cookieParser from "cookie-parser";
+import {
+  ApolloServerPluginLandingPageProductionDefault,
+  ApolloServerPluginLandingPageLocalDefault,
+} from "@apollo/server/plugin/landingPage/default";
+import { resolvers } from "./resolvers";
+import { connectToMongo } from "./utils/mongo";
+import Context from "./types/context";
+import { customFormatError } from './utils/formatError';
+import config from './config';
 
 async function startServer() {
+  const schema = await buildSchema({
+    resolvers,
+  });
+
   const app = express();
-  const httpServer = http.createServer(app)
-  const { PORT, CLIENT_URL } = config;
+  const httpServer = http.createServer(app);
+
+  // Set security HTTP headers
+  app.use(helmet());
+  app.use(helmet.hidePoweredBy());
+
+  // Add cookie parser middleware
+  app.use(cookieParser());
 
   // Set security HTTP headers
   app.use(helmet());
@@ -25,7 +43,7 @@ async function startServer() {
   // Configure Content Security Policy (CSP)
   app.use(
     helmet.contentSecurityPolicy({
-      directives: cspDirectives
+      directives: cspDirectives,
     })
   );
 
@@ -41,28 +59,42 @@ async function startServer() {
   // Enable cors
   app.use(
     cors({
-      origin: CLIENT_URL,
+      origin: "*",
     })
   );
-  app.options('*', cors);
+  app.options("*", cors);
 
   // Add Graphql Middleware
-  const apolloServer = new ApolloServer<GraphQLContext>({
-    typeDefs: typeDefs,
-    resolvers: resolvers,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })]
-  })
-  await apolloServer.start()
+  const apolloServer = new ApolloServer<Context>({
+    schema,
+    formatError: customFormatError,
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      process.env.NODE_ENV === "production"
+        ? ApolloServerPluginLandingPageProductionDefault()
+        : ApolloServerPluginLandingPageLocalDefault(),
+    ],
+  });
+
+  await apolloServer.start();
+
   app.use(
-    '/graphql',
+    "/graphql",
     cors<cors.CorsRequest>(),
     bodyParser.json(),
-    expressMiddleware(apolloServer),
-  )
+    expressMiddleware(apolloServer, {
+      context: async ({ req, res, user }: Context) => {
+        return { req, res, user };
+      },
+    })
+  );
 
   // Start the server
-  await new Promise<void>((resolve) => httpServer.listen({ port: PORT }, resolve))
-  Logger.info(`Server ready at http://localhost:${PORT}`);
+  await new Promise<void>((resolve) =>
+    httpServer.listen({ port: config.port }, resolve)
+  );
+  Logger.info(`Server ready at http://localhost:${config.port}`);
+  connectToMongo();
 }
 
 export default startServer;

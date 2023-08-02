@@ -1,4 +1,9 @@
-import { createTheme, ThemeProvider, CssBaseline, Box, Container } from '@mui/material';
+import {
+  createTheme,
+  ThemeProvider,
+  CssBaseline,
+  Container,
+} from '@mui/material';
 import Splash from './components/Splash';
 import useSplash from './hooks/useSplash';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -11,9 +16,11 @@ import {
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
-import Auth, { AuthProvider } from 'components/Auth';
 import Register from 'components/Auth/Register';
-import AppLoader from './components/AppLoader';
+import Login from 'components/Auth/Login';
+import { appLoader } from 'loaders/appLoader';
+import { authLoader } from 'loaders/authLoader';
+import Main from 'components/Main';
 
 const theme = createTheme({
   components: {
@@ -30,15 +37,18 @@ const theme = createTheme({
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <AppLoader />
+    element: <Main />,
+    loader: appLoader,
   },
   {
     path: '/login',
-    element: <Auth />,
+    element: <Login />,
+    loader: authLoader,
   },
   {
     path: '/register',
     element: <Register />,
+    loader: authLoader,
   },
 ]);
 
@@ -53,19 +63,21 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem('jwt_token');
+  const token = localStorage.getItem('accessToken');
   return {
     headers: {
       ...headers,
       authorization: token ? `Bearer ${token}` : '',
-    }
+    },
   };
 });
 
 const link = from([
   errorLink,
   authLink,
-  new HttpLink({ uri: 'http://localhost:8000/graphql' }),
+  new HttpLink({
+    uri: `http://localhost:${process.env.REACT_APP_SERVER_PORT}/graphql`,
+  }),
 ]);
 
 const client = new ApolloClient({
@@ -82,11 +94,9 @@ const App = () => {
     <ApolloProvider client={client}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-          <AuthProvider>
-            <Container maxWidth="sm" sx={{ p: 0, minHeight: '100vh' }}>
-              <RouterProvider router={router} />
-            </Container>
-          </AuthProvider>
+        <Container maxWidth="sm" sx={{ minHeight: '100vh', p: 0 }}>
+          <RouterProvider router={router} />
+        </Container>
       </ThemeProvider>
     </ApolloProvider>
   );

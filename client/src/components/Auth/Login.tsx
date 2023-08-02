@@ -1,10 +1,10 @@
-import { useContext } from 'react';
 import { TextField, Typography, Button, Stack } from '@mui/material';
 import { useFormik, FormikValues } from 'formik';
-import { useMutation } from '@apollo/client';
-import { AuthContext } from 'components/Auth';
+import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { USER_LOGIN } from 'gql/auth';
+import { useMutationResponse } from '../../gql/useApiResponse';
+import { useEffect } from 'react';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Email is required'),
@@ -13,9 +13,19 @@ const validationSchema = Yup.object().shape({
     .required('Password is required'),
 });
 
+interface LoginResponse {
+  token: string;
+  name: string;
+  email: string;
+  readonly _id: string;
+}
+
 const Login = () => {
-  const { setIsLogin } = useContext(AuthContext);
-  const [loginUser, loginUserState] = useMutation(USER_LOGIN);
+  const { call: login, state } = useMutationResponse<LoginResponse>(
+    'login',
+    USER_LOGIN
+  );
+  const navigate = useNavigate();
 
   const initialValues = {
     email: '',
@@ -23,11 +33,13 @@ const Login = () => {
   };
 
   const handleSubmit = (values: FormikValues) => {
-    return loginUser({
+    return login({
       variables: {
-        email: values.email,
-        password: values.password
-      }
+        input: {
+          email: values.email,
+          password: values.password,
+        },
+      },
     });
   };
 
@@ -37,10 +49,26 @@ const Login = () => {
     validationSchema: validationSchema,
   });
 
+  const saveUser = (data: LoginResponse) => {
+    localStorage.setItem('accessToken', data.token);
+    localStorage.setItem('_id', data._id);
+    localStorage.setItem('email', data.email);
+    localStorage.setItem('name', data.name);
+    navigate('/');
+  };
+
+  useEffect(() => {
+    if (state.data && state.data.token && !state.loading) {
+      saveUser(state.data);
+    }
+  }, [state]);
+
   return (
-    <Stack spacing={2}>
-      <Typography component="h1" sx={{ mb: 4 }}>Welcome, login</Typography>
-      <Stack sx={{ mt: 4, mb: 2 }} spacing={2} component="form">
+    <Stack spacing={2} p={0}>
+      <Typography component="h1" sx={{ mb: 4 }}>
+        Welcome, login
+      </Typography>
+      <Stack component="form" sx={{ mt: 4, mb: 2 }} spacing={2}>
         <TextField
           type="email"
           name="email"
@@ -53,13 +81,21 @@ const Login = () => {
           value={formik.values.password}
           onChange={formik.handleChange}
         />
-        <Button type="submit" sx={{ mt: 4 }} onClick={handleSubmit}>
+        <Button
+          type="button"
+          sx={{ mt: 4 }}
+          onClick={() => formik.handleSubmit()}
+        >
           Get In
         </Button>
       </Stack>
       <Typography>
         Create a new account if you don&apos;t have one here:&nbsp;
-        <Button type="button" variant="text" onClick={() => setIsLogin(false)}>
+        <Button
+          type="button"
+          variant="text"
+          onClick={() => navigate('/register')}
+        >
           Register
         </Button>
       </Typography>
