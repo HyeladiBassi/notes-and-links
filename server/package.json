@@ -15,8 +15,9 @@
     "@types/jest": "^29.5.2",
     "@types/jsonwebtoken": "^9",
     "@types/lodash": "^4",
-    "@types/node": "^20.2.5",
+    "@types/node": "^20.4.5",
     "@types/prettier": "^2",
+    "@types/uuid": "^9",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
     "eslint": "^8.43.0",
@@ -63,11 +64,11 @@
     "jsonwebtoken": "^9.0.1",
     "lodash": "^4.17.21",
     "mongoose": "^7.3.4",
-    "nanoid": "^4.0.2",
     "reflect-metadata": "^0.1.13",
     "ts-node": "^10.9.1",
     "tsdef": "^0.0.14",
     "type-graphql": "2.0.0-beta.1",
+    "uuid": "^9.0.0",
     "winston": "^3.9.0",
     "yup": "^1.2.0"
   }

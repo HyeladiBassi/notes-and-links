@@ -1,7 +1,13 @@
-import { Box } from '@mui/material';
+import { FormControl, Stack, TextField, Typography } from '@mui/material';
+import BottomBar from './BottomBar';
 
 const MainApp = () => {
-  return <Box sx={{ bgcolor: '#cfe8fc', height: '100vh' }} />;
+  return (
+    <Stack>
+      <TextField />
+      <BottomBar />
+    </Stack>
+  );
 };
 
 export default MainApp;

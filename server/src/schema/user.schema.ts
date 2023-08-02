@@ -51,38 +51,38 @@ export const UserModel = getModelForClass<typeof User, QueryHelpers>(User);
 
 @InputType()
 export class CreateUserInput {
-  @Field(() => String)
+  @Field()
   name: string;
 
   @IsEmail()
-  @Field(() => String)
+  @Field()
   email: string;
 
   @MinLength(6, {
-    message: "Password must me at least 6 characters long",
+    message: "Password must be at least 6 characters long",
   })
   @MaxLength(50, {
-    message: "Password must me at least 50 characters long",
+    message: "Password cannot be more than 50 characters long",
   })
-  @Field(() => String)
+  @Field()
   password: string;
 }
 
 @InputType()
 export class LoginInput {
   @IsEmail()
-  @Field(() => String)
+  @Field()
   email: string;
 
   @MinLength(6, {
-    message: "Password must me at least 6 characters long",
+    message: "Password must be at least 6 characters long",
   })
-  @Field(() => String)
+  @Field()
   password: string;
 }
 
 @ObjectType()
 export class LoginResponse extends User {
-  @Field(() => String)
+  @Field()
   token: string;
 }
