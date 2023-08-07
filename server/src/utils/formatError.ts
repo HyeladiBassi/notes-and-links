@@ -1,14 +1,14 @@
 // Custom error formatting for validation errors in type-graphql
 // https://github.com/MichalLytek/type-graphql/issues/1397#issuecomment-1351432122
-import type { GraphQLFormattedError } from 'graphql';
-import { GraphQLError } from 'graphql';
-import { ArgumentValidationError } from 'type-graphql';
-import { unwrapResolverError } from '@apollo/server/errors';
-import type { ValidationError as ClassValidatorValidationError } from 'class-validator';
+import type { GraphQLFormattedError } from "graphql";
+import { GraphQLError } from "graphql";
+import { ArgumentValidationError } from "type-graphql";
+import { unwrapResolverError } from "@apollo/server/errors";
+import type { ValidationError as ClassValidatorValidationError } from "class-validator";
 
 type IValidationError = Pick<
   ClassValidatorValidationError,
-  'property' | 'value' | 'constraints' | 'children'
+  "property" | "value" | "constraints" | "children"
 >;
 
 function formatValidationErrors(
@@ -18,26 +18,26 @@ function formatValidationErrors(
     property: validationError.property,
     ...(validationError.value && { value: validationError.value }),
     ...(validationError.constraints && {
-      constraints: validationError.constraints
+      constraints: validationError.constraints,
     }),
     ...(validationError.children &&
       validationError.children.length !== 0 && {
         children: validationError.children.map((child) =>
           formatValidationErrors(child)
-        )
-      })
+        ),
+      }),
   };
 }
 
 export class ValidationError extends GraphQLError {
   public constructor(validationErrors: ClassValidatorValidationError[]) {
-    super('Validation Error', {
+    super("Validation Error", {
       extensions: {
-        code: 'BAD_USER_INPUT',
+        code: "BAD_USER_INPUT",
         validationErrors: validationErrors.map((validationError) =>
           formatValidationErrors(validationError)
-        )
-      }
+        ),
+      },
     });
 
     Object.setPrototypeOf(this, ValidationError.prototype);

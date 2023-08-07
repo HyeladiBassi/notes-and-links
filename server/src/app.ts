@@ -18,8 +18,8 @@ import {
 import { resolvers } from "./resolvers";
 import { connectToMongo } from "./utils/mongo";
 import Context from "./types/context";
-import { customFormatError } from './utils/formatError';
-import config from './config';
+import { customFormatError } from "./utils/formatError";
+import config from "./config";
 
 async function startServer() {
   const schema = await buildSchema({

@@ -5,16 +5,14 @@ const { publicKey: encodedPublic, privateKey: encodedPrivate } = config;
 
 const publicKey = Buffer.from(encodedPublic as string, "base64").toString(
   "ascii"
-  );
+);
 
 const privateKey = Buffer.from(encodedPrivate as string, "base64").toString(
   "ascii"
 );
 
-export function signJwt(
-  object: any,
-  options?: jwt.SignOptions | undefined
-) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function signJwt(object: any, options?: jwt.SignOptions | undefined) {
   return jwt.sign(object, privateKey, {
     ...(options && options),
     algorithm: "RS256",

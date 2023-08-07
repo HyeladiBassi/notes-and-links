@@ -1,8 +1,7 @@
 import { CreateUserInput, LoginInput, UserModel } from "../schema/user.schema";
-import Context from "../types/context";
 import bcrypt from "bcrypt";
 import { signJwt } from "../utils/jwt";
-import { GraphQLError,  } from 'graphql';
+import { GraphQLError } from "graphql";
 
 class UserService {
   async createUser(input: CreateUserInput) {
@@ -13,9 +12,9 @@ class UserService {
     const errorMessage = "Invalid email or password";
     const errorExtensions = {
       extensions: {
-        code: 'VALIDATION_ERROR',
-        status: 400
-      }
+        code: "VALIDATION_ERROR",
+        status: 400,
+      },
     };
 
     // Get user by email

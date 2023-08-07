@@ -1,5 +1,10 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
-import { CreateUserInput, LoginInput, User, LoginResponse } from "../schema/user.schema";
+import {
+  CreateUserInput,
+  LoginInput,
+  User,
+  LoginResponse,
+} from "../schema/user.schema";
 import UserService from "../service/user.service";
 
 @Resolver()
