@@ -1,8 +1,8 @@
-import { CreateUserInput, LoginInput, UserModel } from "../schema/user.schema";
-import Context from "../types/context";
+import { CreateUserInput, LoginInput, GetMeInput, UserModel } from "../schema/user.schema";
 import bcrypt from "bcrypt";
 import { signJwt } from "../utils/jwt";
 import { GraphQLError,  } from 'graphql';
+import { omit } from 'lodash';
 
 class UserService {
   async createUser(input: CreateUserInput) {
@@ -18,30 +18,36 @@ class UserService {
       }
     };
 
-    // Get user by email
-    const user = await UserModel.find().findByEmail(input.email).lean();
+    const user = await UserModel.findOne({ email: input.email }).lean();
     if (!user) {
       throw new GraphQLError(errorMessage, errorExtensions);
     }
 
-    // Validate password
     const passwordIsValid = await bcrypt.compare(input.password, user.password);
     if (!passwordIsValid) {
       throw new GraphQLError(errorMessage, errorExtensions);
     }
 
-    // Sign a jwt
-    const token = signJwt(user);
-    // context.res.cookie("accessToken", token, {
-    //   maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-    //   httpOnly: true,
-    //   domain: "localhost",
-    //   path: "/",
-    //   sameSite: "strict",
-    //   secure: process.env.NODE_ENV === "production",
-    // });
+    const token = signJwt(omit(user, 'password'));
 
     return { token, ...user };
+  }
+
+  // use auth context to get the user as opposed to the id
+  async getMe(input: GetMeInput) {
+    const errorMessage = "No User was found with that ID";
+    const errorExtensions = {
+      extensions: {
+        code: 'VALIDATION_ERROR',
+        status: 400
+      }
+    };
+
+    const user = await UserModel.findOne({ _id: input.id }).lean();
+    if (!user) {
+      throw new GraphQLError(errorMessage, errorExtensions);
+    }
+    return omit(user, 'password');
   }
 }
 

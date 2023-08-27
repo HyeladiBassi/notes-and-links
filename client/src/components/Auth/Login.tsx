@@ -5,6 +5,7 @@ import * as Yup from 'yup';
 import { USER_LOGIN } from 'gql/auth';
 import { useMutationResponse } from '../../gql/useApiResponse';
 import { useEffect } from 'react';
+import storageService from 'services/storageService';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Email is required'),
@@ -21,7 +22,7 @@ interface LoginResponse {
 }
 
 const Login = () => {
-  const { call: login, state } = useMutationResponse<LoginResponse>(
+  const { login, state } = useMutationResponse<LoginResponse, 'login'>(
     'login',
     USER_LOGIN
   );
@@ -50,10 +51,7 @@ const Login = () => {
   });
 
   const saveUser = (data: LoginResponse) => {
-    localStorage.setItem('accessToken', data.token);
-    localStorage.setItem('_id', data._id);
-    localStorage.setItem('email', data.email);
-    localStorage.setItem('name', data.name);
+    storageService.save(data);
     navigate('/');
   };
 

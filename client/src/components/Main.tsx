@@ -1,12 +1,16 @@
-import { FormControl, Stack, TextField, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import BottomBar from './BottomBar';
+import SearchField from './Search';
+import LinkIcon from 'assets/LinkIcon.svg';
+import EmptyLinks from './Links/EmptyLinks';
 
 const MainApp = () => {
   return (
-    <Stack>
-      <TextField />
+    <>
+      <SearchField />
+      <EmptyLinks />
       <BottomBar />
-    </Stack>
+    </>
   );
 };
 
