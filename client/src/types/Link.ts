@@ -1,5 +1,3 @@
-import { User } from './User';
-
 export interface Link {
   readonly _id: string;
   title?: string;

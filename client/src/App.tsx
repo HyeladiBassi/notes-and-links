@@ -21,6 +21,7 @@ import Login from 'components/Auth/Login';
 import { appLoader } from 'loaders/appLoader';
 import { authLoader } from 'loaders/authLoader';
 import Main from 'components/Main';
+import storageService from 'services/storageService';
 
 const theme = createTheme({
   components: {
@@ -63,7 +64,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem('accessToken');
+  const token = storageService.get('token');
   return {
     headers: {
       ...headers,

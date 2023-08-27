@@ -21,8 +21,12 @@ export function signJwt(
   });
 }
 
-export function verifyJwt<T>(token: string): T | null {
+export function verifyJwt<T>(authorizationToken: string | undefined): T | null {
   try {
+    const token = authorizationToken && authorizationToken.split('Bearer ')[1];
+
+    if (!token) return null;
+
     const decoded = jwt.verify(token, publicKey) as T;
     return decoded;
   } catch (error) {

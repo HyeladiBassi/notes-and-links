@@ -20,10 +20,14 @@ import { connectToMongo } from "./utils/mongo";
 import Context from "./types/context";
 import { customFormatError } from './utils/formatError';
 import config from './config';
+import { verifyJwt } from "./utils/jwt";
+import { User } from './schema/user.schema';
+import authChecker from './utils/authChecker';
 
 async function startServer() {
   const schema = await buildSchema({
     resolvers,
+    authChecker
   });
 
   const app = express();
@@ -83,9 +87,11 @@ async function startServer() {
     cors<cors.CorsRequest>(),
     bodyParser.json(),
     expressMiddleware(apolloServer, {
-      context: async ({ req, res, user }: Context) => {
-        return { req, res, user };
-      },
+      context: async ({ req, res }) => ({
+        req,
+        res,
+        user: verifyJwt<User>(req.headers.authorization),
+      })
     })
   );
 

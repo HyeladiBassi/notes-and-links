@@ -81,6 +81,13 @@ export class LoginInput {
   password: string;
 }
 
+// needs Authorised() decorator
+@InputType()
+export class GetMeInput {
+  @Field()
+  id: string;
+}
+
 @ObjectType()
 export class LoginResponse extends User {
   @Field()

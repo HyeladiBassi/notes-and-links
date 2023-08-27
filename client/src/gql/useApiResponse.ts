@@ -30,8 +30,8 @@ export const getApiResponse = async (
   return;
 };
 
-export function useMutationResponse<T>(
-  endpoint: string,
+export function useMutationResponse<T, E extends string>(
+  endpoint: E,
   mutation: DocumentNode
 ) {
   const [call, state] = useMutation(mutation);
@@ -61,7 +61,10 @@ export function useMutationResponse<T>(
   }, [state]);
 
   return useMemo(
-    () => ({ call, state: { loading: state.loading, data, error, reset } }),
+    () => ({
+      [endpoint]: Object.assign(call),
+      state: { loading: state.loading, data, error, reset },
+    }),
     [call, state]
   );
 }
@@ -88,7 +91,7 @@ export const useQueryResponse = (endpoint: string, query: DocumentNode) => {
   }, [state]);
 
   return useMemo(
-    () => ({ call, state: { ...state, data, error } }),
+    () => ({ [endpoint]: call, state: { ...state, data, error } }),
     [call, state]
   );
 };

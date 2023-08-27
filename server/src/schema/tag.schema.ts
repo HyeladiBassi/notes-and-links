@@ -16,12 +16,14 @@ export class Tag {
   _id: string;
 
   @Field(() => String)
-  title: string;
+  @prop({ required: true })
+  name: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   description: string;
 
   @Field(() => Boolean)
+  @prop({ default: () => false })
   hidden: boolean;
 
   @Field(() => String)
@@ -38,13 +40,13 @@ export const TagModel = getModelForClass<typeof Tag>(Tag);
 @InputType()
 export class CreateTagInput {
   @MinLength(6, {
-    message: "Title must me have least 2 characters",
+    message: "Name must me have least 2 characters",
   })
   @MaxLength(50, {
-    message: "Title cannot be more than 50 characters;",
+    message: "Name cannot be more than 50 characters;",
   })
   @Field()
-  title: string;
+  name: string;
 
   @MinLength(6, {
     message: "Description must me at least 6 characters long",

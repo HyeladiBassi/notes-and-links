@@ -1,23 +1,13 @@
 import { useState, useEffect } from 'react';
-
-const getLoadedFromStorage = () => {
-  const loaded = window.localStorage.getItem('SPLASH_LOADED');
-  if (loaded) return JSON.parse(loaded).loaded;
-  return false;
-};
+import storageService from 'services/storageService';
 
 const useSplash = () => {
-  const loadedFromStorage = getLoadedFromStorage();
-
-  const [loading, setLoading] = useState(!loadedFromStorage);
+  const [loading, setLoading] = useState(!storageService.get('splashLoaded'));
 
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-      window.localStorage.setItem(
-        'SPLASH_LOADED',
-        JSON.stringify({ loaded: true })
-      );
+      storageService.save({ splashLoaded: true });
     }, 3000);
   }, []);
 

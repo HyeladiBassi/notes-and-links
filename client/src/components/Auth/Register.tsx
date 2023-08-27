@@ -18,10 +18,10 @@ const validationSchema = Yup.object().shape({
 });
 
 const Register = () => {
-  const { call: createUser, state } = useMutationResponse<{ success: boolean }>(
-    'createUser',
-    USER_REGISTER
-  );
+  const { createUser, state } = useMutationResponse<
+    { success: boolean },
+    'createUser'
+  >('createUser', USER_REGISTER);
   const navigate = useNavigate();
 
   const initialValues = {
